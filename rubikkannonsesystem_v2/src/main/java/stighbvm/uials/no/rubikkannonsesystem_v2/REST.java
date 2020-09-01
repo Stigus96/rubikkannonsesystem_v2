@@ -116,7 +116,7 @@ public class REST {
  * @return result of the request. If successful, the request will include
  * the new unique ids of the Item and associated Photos
  */
-    public Response addItem(String title, String description, BigDecimal price, FormDataMultiPart Photos) {
+    public Response addItem(String itemid , String title, String description, BigDecimal price, FormDataMultiPart Photos) {
         Item item = em.find(Item.class, itemid);
         if (item != null){
             

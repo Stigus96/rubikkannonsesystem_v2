@@ -44,7 +44,7 @@ import io.jsonwebtoken.security.InvalidKeyException;
 import javax.annotation.Resource;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
-import no.ntnu.tollefsen.chat.configuration.DatasourceProducer;
+
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
@@ -61,8 +61,7 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 @Log
 public class AuthentictionService {
     
-    @Inject
-    KeyService keyService;
+
     
     @Inject
     IdentityStoreHandler identityStoreHandler;
