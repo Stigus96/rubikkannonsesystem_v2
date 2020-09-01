@@ -125,7 +125,7 @@ public class AuthentictionService {
  @POST
  @Path("create")
  @Produces (MediaType.APPLICATION_JSON)
- public Response createUser(String userid, String password) {
+ public Response createUser(@FormParam("userid") String userid, @FormParam("password") String password) {
  User user = em.find(User.class, userid);
  if (user != null) {
      log.log(Level.INFO, "user already exists {0}", userid);
@@ -142,9 +142,26 @@ public class AuthentictionService {
  
 
  
- public User getCurrentUser() {} // Get information about current user
+ public User getCurrentUser() {
+    return em.find(User.class, principal.getName());
+ } // Get information about current user
+ 
  /** Change password of current user or any user if current user has the role of
  administrator */
- public Response changePassword(String userid, String password) {}
+ public Response changePassword(@QueryParam("userid") String userid, 
+         @QueryParam("password") String password,
+         @Context SecurityContext sc) {
+ String authuser = sc.getUserPrincipal() != null ? sc.getUserPrincipal().getName() : null;
+ if (authuser == null || userid == null || password == null){
+     log.log(Level.SEVERE, "Failed to change password on user {0}", userid);
+     return Response.status(Response.Status.BAD_REQUEST).build();
+ } else {
+     User user = em.find(User.class, userid);
+     user.setPassword(hasher.generate(password.toCharArray()));
+     em.merge(user);
+     return Response.ok().build();
+ 
+ }
 }
 
+}
