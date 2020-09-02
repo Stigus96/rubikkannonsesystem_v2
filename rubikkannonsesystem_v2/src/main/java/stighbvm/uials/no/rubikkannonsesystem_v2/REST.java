@@ -103,6 +103,13 @@ public class REST {
  * @return result of delete request
  */
     public Response delete(Long itemid) {
+        if (itemid == null){
+            log.log(Level.SEVERE, "Failed to delete item {0}", itemid);
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        } else{
+            Item item = em.find(Item.class, itemid);
+            item.
+        }
         
     }
     
@@ -119,17 +126,16 @@ public class REST {
     public Response addItem(String itemid , String title, String description, BigDecimal price, FormDataMultiPart Photos) {
         Item item = em.find(Item.class, itemid);
         if (item != null){
+            log.log(Level.INFO, "item already exists {0}", itemid);
+            return Response.status(Response.Status.BAD_REQUEST).build();
             
         } else {
             item = new Item();
             item.setItemTitle(title);
             item.setItemdDescription(description);
             item.setPrice(price);
-           
-            
+           return Response.ok(em.merge(item)).build();
         }
-        
-        
     }
     
  /**

@@ -5,6 +5,7 @@
  */
 package stighbvm.uials.no.rubikkannonsesystem_v2;
 
+import java.util.Date;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -40,7 +41,15 @@ public class Item {
     @Id
     Long itemid;
     
+    @Temporal(javax.persistence.TemporalType.DATE)
+    Date created;
+    
     String title;
     String description;
+    
+    @PrePersist
+    protected void onCreate() {
+        created = new Date();
+    }
     
 }
