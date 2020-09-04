@@ -40,117 +40,126 @@ import lombok.extern.java.Log;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.InvalidKeyException;
+import java.math.BigDecimal;
+import java.util.List;
 import javax.annotation.Resource;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import no.ntnu.tollefsen.chat.configuration.DatasourceProducer;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
-
 import org.eclipse.microprofile.jwt.JsonWebToken;
+import org.glassfish.jersey.media.multipart.ContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
+import org.glassfish.jersey.media.multipart.FormDataMultiPart;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 
 /**
  *
- * @author Stigus
- * REST service class to be used by the UI */
+ * @author Stigus REST service class to be used by the UI
+ */
 @Path("REST")
 @Stateless
 @Log
 public class REST {
-    
 
-    
     @Inject
     IdentityStoreHandler identityStoreHandler;
-    
+
     @PersistenceContext
     EntityManager em;
-    
+
     @Inject
     PasswordHash hasher;
 
     @Inject
     JsonWebToken principal;
-    
-    
-/**
-* Public method that returns items with photos sold in the shop
-*/
-    public List<Item> getItems(){
-        
+
+    /**
+     * Public method that returns items with photos sold in the shop
+     */
+    public List<Item> getItems() {
+        return em.createNamedQuery(Item.FIND_ALL_ITEMS, Item.class).getResultList();
     }
-    
-    
-    
-/**
-* A registered user may purchase an Item. An email will be sent to the
-* seller if the purchase is successful
-*
-* @param itemid unique id for item
-* @return result of purchase request
-*/
+
+    /**
+     * A registered user may purchase an Item. An email will be sent to the
+     * seller if the purchase is successful
+     *
+     * @param itemid unique id for item
+     * @return result of purchase request
+     */
     public Response purchase(Long itemid) {
-        
+
     }
-    
- /**
- * A registered user may remove an item and associated photos owned by the
- * calling user. An user with administrator privileges may remove any item
- * and associated photos.
- *
- * @param itemid unique id for item to be deleted
- * @return result of delete request
- */
+
+    /**
+     * A registered user may remove an item and associated photos owned by the
+     * calling user. An user with administrator privileges may remove any item
+     * and associated photos.
+     *
+     * @param itemid unique id for item to be deleted
+     * @return result of delete request
+     */
     public Response delete(Long itemid) {
-        if (itemid == null){
+        if (itemid == null) {
             log.log(Level.SEVERE, "Failed to delete item {0}", itemid);
             return Response.status(Response.Status.BAD_REQUEST).build();
-        } else{
+        } else {
             Item item = em.find(Item.class, itemid);
             item.
         }
-        
+
     }
-    
- /**
- * A registered user may add an item and photo(s) to Fant.
- *
- * @param title the title of Item
- * @param description the description of Item
- * @param price the price of Item
- * @param photos one or more photos associated with Item
- * @return result of the request. If successful, the request will include
- * the new unique ids of the Item and associated Photos
- */
-    public Response addItem(String itemid , String title, String description, BigDecimal price, FormDataMultiPart Photos) {
+
+    /**
+     * A registered user may add an item and photo(s) to Fant.
+     *
+     * @param title the title of Item
+     * @param description the description of Item
+     * @param price the price of Item
+     * @param photos one or more photos associated with Item
+     * @return result of the request. If successful, the request will include
+     * the new unique ids of the Item and associated Photos
+     */
+    @POST
+    @Path("add")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({Group.USER})
+    public Response addItem(@FormDataParam("itemid") String itemid,
+            @FormDataParam("title") String title,
+            @FormDataParam("description") String description,
+            @FormDataParam("price") BigDecimal price,
+            FormDataMultiPart Photos) {
         Item item = em.find(Item.class, itemid);
-        if (item != null){
+        if (item != null) {
             log.log(Level.INFO, "item already exists {0}", itemid);
             return Response.status(Response.Status.BAD_REQUEST).build();
-            
+
         } else {
             item = new Item();
             item.setItemTitle(title);
             item.setItemdDescription(description);
             item.setPrice(price);
-           return Response.ok(em.merge(item)).build();
+            return Response.ok(em.merge(item)).build();
         }
     }
-    
- /**
- * Streams an image to the browser (the actual compressed pixels). The image
- * will be scaled to the appropriate width if the width parameter is provided.
- * This is a public method available to all callers.
- *
- * @param name the filename of the image
- * @param width the required scaled with of the image
- *
- * @return the image in original format or in jpeg if scaled
- */
+
+    /**
+     * Streams an image to the browser (the actual compressed pixels). The image
+     * will be scaled to the appropriate width if the width parameter is
+     * provided. This is a public method available to all callers.
+     *
+     * @param name the filename of the image
+     * @param width the required scaled with of the image
+     *
+     * @return the image in original format or in jpeg if scaled
+     */
     public Response getPhoto(String name, int width) {
     }
-    
 
 }
     

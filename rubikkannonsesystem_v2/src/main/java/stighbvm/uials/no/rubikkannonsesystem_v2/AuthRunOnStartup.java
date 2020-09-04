@@ -1,10 +1,11 @@
-package no.ntnu.tollefsen.auth;
+package stighbvm.uials.no.rubikkannonsesystem_v2;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import stighbvm.uials.no.rubikkannonsesystem_v2.Group;
 
 /**
  *

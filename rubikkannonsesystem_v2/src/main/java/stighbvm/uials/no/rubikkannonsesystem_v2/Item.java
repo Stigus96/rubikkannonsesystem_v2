@@ -26,13 +26,16 @@ import javax.persistence.Version;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import static stighbvm.uials.no.rubikkannonsesystem_v2.Item.FIND_ALL_ITEMS;
 /**
  *
  * @author Stigus
  * An item to be sold in the Fant webstore */
 @Entity @Table(name = "AITEM")
 @Data @AllArgsConstructor @NoArgsConstructor
+@NamedQuery(name = FIND_ALL_ITEMS, query = "select i from Item oredr by i.title")
 public class Item {
+    public static final String FIND_ALL_ITEMS = "Items.findAllItems";
     
     public enum State {
         ACTIVE, INACTIVE

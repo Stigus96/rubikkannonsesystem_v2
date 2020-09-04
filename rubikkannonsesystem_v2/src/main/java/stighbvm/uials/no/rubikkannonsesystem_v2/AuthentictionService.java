@@ -5,7 +5,6 @@
  */
 package stighbvm.uials.no.rubikkannonsesystem_v2;
 
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -45,47 +44,43 @@ import javax.annotation.Resource;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 
-
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
-
 /**
  *
- * @author Stigus
- * REST service class used for authentication */
+ * @author Stigus REST service class used for authentication
+ */
 @Path("auth")
 @Stateless
 @Log
 public class AuthentictionService {
-    
+
     @Inject
     KeyService keyService;
-    
+
     @Inject
     IdentityStoreHandler identityStoreHandler;
-    
+
     @PersistenceContext
     EntityManager em;
 
     @Inject
-   @ConfigProperty(name = "mp.jwt.verify.issuer", defaultValue = "issuer")
-   String issuer;
-    
+    @ConfigProperty(name = "mp.jwt.verify.issuer", defaultValue = "issuer")
+    String issuer;
+
     @Inject
     PasswordHash hasher;
-    
+
     @Inject
     JsonWebToken principal;
-    
-    
- public Response login(String userid, String password,
- @Context HttpServletRequest request) {
- CredentialValidationResult result = identityStoreHandler.validate(
+
+    public Response login(String userid, String password,
+            @Context HttpServletRequest request) {
+        CredentialValidationResult result = identityStoreHandler.validate(
                 new UsernamePasswordCredential(userid, password));
- if (result.getStatus() == CredentialValidationResult.Status.VALID) {
+        if (result.getStatus() == CredentialValidationResult.Status.VALID) {
             String token = issueToken(result.getCallerPrincipal().getName(),
                     result.getCallerGroups(), request);
             return Response
@@ -95,10 +90,17 @@ public class AuthentictionService {
         } else {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
-     
- } // Login user
- 
- private String issueToken(String name, Set<String> groups, HttpServletRequest request) {
+
+    } // Login user
+
+    /**
+     *
+     * @param name
+     * @param groups
+     * @param request
+     * @return
+     */
+    private String issueToken(String name, Set<String> groups, HttpServletRequest request) {
         try {
             Date now = new Date();
             Date expiration = Date.from(LocalDateTime.now().plusDays(1L).atZone(ZoneId.systemDefault()).toInstant());
@@ -122,50 +124,51 @@ public class AuthentictionService {
             throw new RuntimeException("Failed to create token", t);
         }
     }
- 
- @POST
- @Path("create")
- @Produces (MediaType.APPLICATION_JSON)
- public Response createUser(@FormParam("userid") String userid, @FormParam("password") String password) {
- User user = em.find(User.class, userid);
- if (user != null) {
-     log.log(Level.INFO, "user already exists {0}", userid);
-     return Response.status(Response.Status.BAD_REQUEST).build();
- } else {
-     user = new User();
-     user.setUserid(userid);
-     user.setPassword(hasher.generate(password.toCharArray()));
-     Group usergroup = em.find(Group.class, Group.USER);
-     user.getGroups().add(usergroup);
-     return Response.ok(em.merge(user)).build();
- }
- } // Create new user
- 
 
-@GET
-@Path("currentuser")    
-@RolesAllowed(value = {Group.USER})
-@Produces(MediaType.APPLICATION_JSON)
- public User getCurrentUser() {
-    return em.find(User.class, principal.getName());
- } // Get information about current user
- 
- /** Change password of current user or any user if current user has the role of
- administrator */
- public Response changePassword(@QueryParam("userid") String userid, 
-         @QueryParam("password") String password,
-         @Context SecurityContext sc) {
- String authuser = sc.getUserPrincipal() != null ? sc.getUserPrincipal().getName() : null;
- if (authuser == null || userid == null || password == null){
-     log.log(Level.SEVERE, "Failed to change password on user {0}", userid);
-     return Response.status(Response.Status.BAD_REQUEST).build();
- } else {
-     User user = em.find(User.class, userid);
-     user.setPassword(hasher.generate(password.toCharArray()));
-     em.merge(user);
-     return Response.ok().build();
- 
- }
-}
+    @POST
+    @Path("create")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response createUser(@FormParam("userid") String userid, @FormParam("password") String password) {
+        User user = em.find(User.class, userid);
+        if (user != null) {
+            log.log(Level.INFO, "user already exists {0}", userid);
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        } else {
+            user = new User();
+            user.setUserid(userid);
+            user.setPassword(hasher.generate(password.toCharArray()));
+            Group usergroup = em.find(Group.class, Group.USER);
+            user.getGroups().add(usergroup);
+            return Response.ok(em.merge(user)).build();
+        }
+    } // Create new user
+
+    @GET
+    @Path("currentuser")
+    @RolesAllowed(value = {Group.USER})
+    @Produces(MediaType.APPLICATION_JSON)
+    public User getCurrentUser() {
+        return em.find(User.class, principal.getName());
+    } // Get information about current user
+
+    /**
+     * Change password of current user or any user if current user has the role
+     * of administrator
+     */
+    public Response changePassword(@QueryParam("userid") String userid,
+            @QueryParam("password") String password,
+            @Context SecurityContext sc) {
+        String authuser = sc.getUserPrincipal() != null ? sc.getUserPrincipal().getName() : null;
+        if (authuser == null || userid == null || password == null) {
+            log.log(Level.SEVERE, "Failed to change password on user {0}", userid);
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        } else {
+            User user = em.find(User.class, userid);
+            user.setPassword(hasher.generate(password.toCharArray()));
+            em.merge(user);
+            return Response.ok().build();
+
+        }
+    }
 
 }
