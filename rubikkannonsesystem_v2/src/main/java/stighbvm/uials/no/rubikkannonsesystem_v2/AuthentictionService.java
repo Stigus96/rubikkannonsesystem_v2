@@ -61,7 +61,8 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 @Log
 public class AuthentictionService {
     
-
+    @Inject
+    KeyService keyService;
     
     @Inject
     IdentityStoreHandler identityStoreHandler;
@@ -141,7 +142,10 @@ public class AuthentictionService {
  } // Create new user
  
 
- 
+@GET
+@Path("currentuser")    
+@RolesAllowed(value = {Group.USER})
+@Produces(MediaType.APPLICATION_JSON)
  public User getCurrentUser() {
     return em.find(User.class, principal.getName());
  } // Get information about current user
