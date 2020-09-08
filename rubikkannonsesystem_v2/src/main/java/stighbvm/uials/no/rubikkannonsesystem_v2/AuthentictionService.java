@@ -76,7 +76,9 @@ public class AuthentictionService {
     @Inject
     JsonWebToken principal;
 
-    public Response login(String userid, String password,
+    public Response login(
+            @QueryParam("userid") @NotBlank String userid,
+            @QueryParam("password") @NotBlank String password,
             @Context HttpServletRequest request) {
         CredentialValidationResult result = identityStoreHandler.validate(
                 new UsernamePasswordCredential(userid, password));

@@ -152,8 +152,8 @@ public class REST {
         } else {
             item = new Item();
             item.setItemid(itemid);
-            item.setItemTitle(title);
-            item.setItemdDescription(description);
+            item.setTitle(title);
+            item.setDescription(description);
             item.setPrice(price);
             return Response.ok(em.merge(item)).build();
         }
