@@ -24,8 +24,10 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -77,6 +79,21 @@ public class User implements Serializable {
             groups = new ArrayList<>();
         }
         return groups;
+    }
+    
+    
+    @ManyToOne
+    @JoinTable(name="buyerid",
+            joinColumns = @JoinColumn (name="userid", referencedColumnName ="userid"),
+            inverseJoinColumns = @JoinColumn(name = "buyerid", referencedColumnName ="buyerid"))
+    List<Listing> buyers;
+    
+    
+    public List<Listing> getBuyer() {
+        if(buyers == null) {
+            buyers = new ArrayList<>();
+        }
+        return buyers;
     }
    
     
