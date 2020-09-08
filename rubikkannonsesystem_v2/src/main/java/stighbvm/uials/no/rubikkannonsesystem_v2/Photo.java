@@ -31,7 +31,8 @@ import javax.persistence.Version;
     
 @Entity
 public class Photo {
-public static final String FIND_BY_NAME_AND_WIDTH = "Photo.findByNameAndWidth";
+public static final String FIND_BY_NAME = "Photo.findByName";
+
 @Id
 String id;
 

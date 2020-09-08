@@ -120,22 +120,27 @@ public class REST {
         if ((listing.buyerid) == (user.userid)) {
             log.log(Level.INFO, "you can not buy your own item");
             return Response.status(Response.Status.BAD_REQUEST).build();
-        } else {
+        } 
+        if (listing.buyerid != null){
+            log.log(Level.INFO, "item has already been bought");
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+        else {
             listing.buyerid = user.userid;
-            
+            sendEmail(listing.sellerid);
         }
         
-        
-        
-       /** AuthentictionService authserv;
-        authserv = new AuthentictionService();
-        User user = authserv.getCurrentUser();
-        Listing buyer = em.find(Listing.class, Listing.BUYER);
-        user.getBuyer().add(buyer);
-        return em.merge(user);
-        */
+    } 
+   
+        public void sendEmail(String sellerid) {
+            User user = getUserBySellerid();
 
     }
+        
+        public User getUserBySellerid(String sellerid){
+            
+            return em.find(User.class, sellerid);
+        }
 
     /**
      * A registered user may remove an item and associated photos owned by the
