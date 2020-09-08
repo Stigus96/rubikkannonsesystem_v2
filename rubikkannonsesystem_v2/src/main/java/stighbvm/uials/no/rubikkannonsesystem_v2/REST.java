@@ -46,6 +46,7 @@ import javax.annotation.Resource;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
+import javax.ws.rs.PathParam;
 import no.ntnu.tollefsen.chat.configuration.DatasourceProducer;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -92,6 +93,12 @@ public class REST {
      * @return result of purchase request
      */
     public Response purchase(Long itemid) {
+        AuthentictionService authserv;
+        authserv = new AuthentictionService();
+        User user = authserv.getCurrentUser();
+        Listing buyer = em.find(Listing.class, Listing.BUYER);
+        user.getBuyer().add(buyer);
+        return em.merge(user);
 
     }
 
@@ -103,15 +110,18 @@ public class REST {
      * @param itemid unique id for item to be deleted
      * @return result of delete request
      */
+    @PUT
+    @Path("delete")
+    @RolesAllowed(value = {Group.USER})
     public Response delete(Long itemid) {
         if (itemid == null) {
             log.log(Level.SEVERE, "Failed to delete item {0}", itemid);
             return Response.status(Response.Status.BAD_REQUEST).build();
         } else {
             Item item = em.find(Item.class, itemid);
-            item.
+            em.remove(item);
+            return Response.ok().build();
         }
-
     }
 
     /**
@@ -129,11 +139,11 @@ public class REST {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({Group.USER})
-    public Response addItem(@FormDataParam("itemid") String itemid,
+    public Response addItem(@FormDataParam("itemid") Long itemid,
             @FormDataParam("title") String title,
             @FormDataParam("description") String description,
             @FormDataParam("price") BigDecimal price,
-            FormDataMultiPart Photos) {
+            FormDataMultiPart photos) {
         Item item = em.find(Item.class, itemid);
         if (item != null) {
             log.log(Level.INFO, "item already exists {0}", itemid);
@@ -141,6 +151,7 @@ public class REST {
 
         } else {
             item = new Item();
+            item.setItemid(itemid);
             item.setItemTitle(title);
             item.setItemdDescription(description);
             item.setPrice(price);
@@ -158,7 +169,18 @@ public class REST {
      *
      * @return the image in original format or in jpeg if scaled
      */
-    public Response getPhoto(String name, int width) {
+    @GET
+    @Path("image/{name}")
+    @Produces("image/jpeg")
+    public Response getPhoto(@PathParam("name") String name,
+            @QueryParam("width") int width) {
+        if(em.find(Photo.class, name) !=null) {
+            
+        }
+    }
+    
+    public User setAsPurchaser(){
+        
     }
 
 }

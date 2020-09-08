@@ -26,6 +26,15 @@ import javax.persistence.Version;
  *
  * @author Stigus
  * Represents a photo or an image of an item for sale */
-public class Photo {
+    //@NamedQuery(name = FIND_BY_NAME_AND_WIDTH,
+            //query = "select * from Photos")
     
+@Entity
+public class Photo {
+public static final String FIND_BY_NAME_AND_WIDTH = "Photo.findByNameAndWidth";
+@Id
+String id;
+
+String name;
+        
 }
