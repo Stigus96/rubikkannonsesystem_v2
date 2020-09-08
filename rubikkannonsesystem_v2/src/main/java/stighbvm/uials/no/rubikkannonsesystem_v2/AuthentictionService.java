@@ -130,7 +130,9 @@ public class AuthentictionService {
     @POST
     @Path("create")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response createUser(@FormParam("userid") String userid, @FormParam("password") String password) {
+    public Response createUser(@FormParam("userid") String userid,
+            @FormParam("password") String password,
+            @FormParam("email") String email) {
         User user = em.find(User.class, userid);
         if (user != null) {
             log.log(Level.INFO, "user already exists {0}", userid);
@@ -139,6 +141,7 @@ public class AuthentictionService {
             user = new User();
             user.setUserid(userid);
             user.setPassword(hasher.generate(password.toCharArray()));
+            user.setEmail(email);
             Group usergroup = em.find(Group.class, Group.USER);
             user.getGroups().add(usergroup);
             return Response.ok(em.merge(user)).build();

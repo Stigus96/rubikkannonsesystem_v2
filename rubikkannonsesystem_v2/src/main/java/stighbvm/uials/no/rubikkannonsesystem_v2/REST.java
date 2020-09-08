@@ -47,7 +47,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.PathParam;
-import no.ntnu.tollefsen.chat.configuration.DatasourceProducer;
+//import no.ntnu.tollefsen.chat.configuration.DatasourceProducer;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
@@ -68,6 +68,9 @@ public class REST {
 
     @Inject
     IdentityStoreHandler identityStoreHandler;
+    
+    @Context
+    SecurityContext sc;
 
     @PersistenceContext
     EntityManager em;
@@ -81,10 +84,26 @@ public class REST {
     /**
      * Public method that returns items with photos sold in the shop
      */
+    @GET
+    @Path("items")
     public List<Item> getItems() {
         return em.createNamedQuery(Item.FIND_ALL_ITEMS, Item.class).getResultList();
     }
+    
+    private Item getItem(Long itemid){
+        return em.createNamedQuery(Item.FIND_BY_ITEMID, Item.class)
+                .setParameter("itemid", itemid)
+                .setParameter("userid", sc.getUserPrincipal().getName())
+                .getSingleResult();
+    }
 
+    
+    private Listing getListing(Long listingid) {
+        return em.createNamedQuery(Listing.FIND_BY_LISTINGID, Listing.class)
+                .setParameter("listingid", listingid)
+                .setParameter("userid", sc.getUserPrincipal().getName())
+                .getSingleResult();
+    }
     /**
      * A registered user may purchase an Item. An email will be sent to the
      * seller if the purchase is successful
@@ -92,13 +111,29 @@ public class REST {
      * @param itemid unique id for item
      * @return result of purchase request
      */
-    public Response purchase(Long itemid) {
-        AuthentictionService authserv;
+    @RolesAllowed(value = {Group.USER})
+    public Response purchase(Long listingid) {
+        User user = em.find(User.class,sc.getUserPrincipal().getName());
+        Listing listing = em.find(Listing.class, getListing(listingid));
+
+        
+        if ((listing.buyerid) == (user.userid)) {
+            log.log(Level.INFO, "you can not buy your own item");
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        } else {
+            listing.buyerid = user.userid;
+            
+        }
+        
+        
+        
+       /** AuthentictionService authserv;
         authserv = new AuthentictionService();
         User user = authserv.getCurrentUser();
         Listing buyer = em.find(Listing.class, Listing.BUYER);
         user.getBuyer().add(buyer);
         return em.merge(user);
+        */
 
     }
 
@@ -135,15 +170,14 @@ public class REST {
      * the new unique ids of the Item and associated Photos
      */
     @POST
-    @Path("add")
+    @Path("addItem")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({Group.USER})
     public Response addItem(@FormDataParam("itemid") Long itemid,
             @FormDataParam("title") String title,
             @FormDataParam("description") String description,
-            @FormDataParam("price") BigDecimal price,
-            FormDataMultiPart photos) {
+            @FormDataParam("price") BigDecimal price) {
         Item item = em.find(Item.class, itemid);
         if (item != null) {
             log.log(Level.INFO, "item already exists {0}", itemid);
@@ -159,6 +193,32 @@ public class REST {
         }
     }
 
+    @POST
+    @Path("addListing")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({Group.USER})
+    private Response makeListing(@FormDataParam("listingid") Long listingid,
+            @FormDataParam("Litemid") Long Litemid,
+            @FormDataParam("sellerid") String sellerid,
+            @FormDataParam("buyerid") String buyerid,
+            FormDataMultiPart photos) {
+        Listing listing = em.find(Listing.class, listingid);
+        if (listing != null) {
+            log.log(Level.INFO, "listing already exists {0}", listingid);
+            return Response.status(Response.Status.BAD_REQUEST).build();
+
+        } else {
+            listing = new Listing();
+            listing.setListingid(listingid);
+            listing.setLitemid(Litemid);
+            listing.setBuyerid(buyerid);
+            listing.setSellerid(sellerid);
+            return Response.ok(em.merge(listing)).build();
+        }
+
+    }
+    
     /**
      * Streams an image to the browser (the actual compressed pixels). The image
      * will be scaled to the appropriate width if the width parameter is
@@ -179,9 +239,7 @@ public class REST {
         }
     }
     
-    public User setAsPurchaser(){
-        
-    }
+
 
 }
     

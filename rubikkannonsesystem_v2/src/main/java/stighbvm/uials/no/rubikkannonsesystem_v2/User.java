@@ -32,6 +32,7 @@ import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.Version;
+import javax.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -61,6 +62,9 @@ public class User implements Serializable {
     
     @JsonbTransient
     String password;
+    
+    @Email
+    String email;
     
     @ManyToMany
     @JoinTable(name="AUSERGROUP",

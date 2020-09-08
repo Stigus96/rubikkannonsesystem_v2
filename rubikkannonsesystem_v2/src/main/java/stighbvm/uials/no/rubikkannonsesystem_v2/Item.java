@@ -18,6 +18,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -33,6 +34,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import static stighbvm.uials.no.rubikkannonsesystem_v2.Item.FIND_ALL_ITEMS;
+import static stighbvm.uials.no.rubikkannonsesystem_v2.Item.FIND_BY_ITEMID;
 /**
  *
  * @author Stigus
@@ -40,12 +42,17 @@ import static stighbvm.uials.no.rubikkannonsesystem_v2.Item.FIND_ALL_ITEMS;
 @Entity @Table(name = "AITEM")
 @Data @AllArgsConstructor @NoArgsConstructor
 @NamedQuery(name = FIND_ALL_ITEMS, query = "select i from Item order by i.title")
+@NamedQuery(name = FIND_BY_ITEMID,
+        query = "select distinct i from Item i, User u" +
+                "where i.itemid = :itemid and u.userid = :userid")
+
 public class Item {
-    public static final String FIND_ALL_ITEMS = "Items.findAllItems";
+    public static final String FIND_ALL_ITEMS = "Item.findAllItems";
+    public static final String FIND_BY_ITEMID = "Item.findByItemid";
     
 
     
-    @Id
+    @Id @GeneratedValue
     Long itemid;
     
     @Temporal(javax.persistence.TemporalType.DATE)
