@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package rubikkannonsesystem;
+package stighbvm.uials.no.rubikkannonsesystem_v2;
 
 /**
  *

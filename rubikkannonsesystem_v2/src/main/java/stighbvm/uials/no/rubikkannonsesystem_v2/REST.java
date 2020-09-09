@@ -69,6 +69,9 @@ public class REST {
     @Inject
     IdentityStoreHandler identityStoreHandler;
     
+    @Inject
+    MailService mailService;
+    
     @Context
     SecurityContext sc;
 
@@ -127,20 +130,32 @@ public class REST {
         }
         else {
             listing.buyerid = user.userid;
-            sendEmail(listing.sellerid);
+            
+            Item item = em.find(Item.class, listing.Litemid);
+            User userseller = em.find(User.class, listing.sellerid);
+            String email = userseller.email;
+            String subject = "Your item " + item.title + " has been sold";
+            String body = "The item " + item.title + 
+                    " you put up for sale has been bought by " + user.userid;
+            mailService.sendEmail(email, subject, body);
+                    
+            //sendEmail(listing.sellerid, subject, body);
+            return Response.ok(em.merge(listing)).build();
         }
         
     } 
    
-        public void sendEmail(String sellerid) {
-            User user = getUserBySellerid();
-
-    }
+      //  public void sendEmail(String sellerid, String subject, String body) {
+      //      //User user = getUserBySellerid(sellerid);
+      //     User user = em.find(User.class, sellerid);
+      //     String email = user.email;
+       //    mailService.sendEmail(email, subject, body);          
+  //  }
         
-        public User getUserBySellerid(String sellerid){
-            
-            return em.find(User.class, sellerid);
-        }
+    //    public User getUserBySellerid(String sellerid){
+    //        
+    //        return em.find(User.class, sellerid);
+    //    }
 
     /**
      * A registered user may remove an item and associated photos owned by the
@@ -206,7 +221,7 @@ public class REST {
     private Response makeListing(@FormDataParam("listingid") Long listingid,
             @FormDataParam("Litemid") Long Litemid,
             @FormDataParam("sellerid") String sellerid,
-            @FormDataParam("buyerid") String buyerid,
+            //@FormDataParam("buyerid") String buyerid,
             FormDataMultiPart photos) {
         Listing listing = em.find(Listing.class, listingid);
         if (listing != null) {
@@ -217,7 +232,7 @@ public class REST {
             listing = new Listing();
             listing.setListingid(listingid);
             listing.setLitemid(Litemid);
-            listing.setBuyerid(buyerid);
+            //listing.setBuyerid(buyerid);
             listing.setSellerid(sellerid);
             return Response.ok(em.merge(listing)).build();
         }
@@ -234,7 +249,8 @@ public class REST {
      *
      * @return the image in original format or in jpeg if scaled
      */
-    @GET
+ /**   @GET
+
     @Path("image/{name}")
     @Produces("image/jpeg")
     public Response getPhoto(@PathParam("name") String name,
@@ -244,7 +260,7 @@ public class REST {
         }
     }
     
-
+*/
 
 }
     
