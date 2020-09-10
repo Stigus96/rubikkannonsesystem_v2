@@ -24,6 +24,7 @@ import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.Version;
+import lombok.Data;
 /**
  *
  * @author Stigus
@@ -32,6 +33,7 @@ import javax.persistence.Version;
             //query = "select * from Photos")
     
 @Entity
+@Data
 public class Photo {
 public static final String FIND_BY_NAME = "Photo.findByName";
 
