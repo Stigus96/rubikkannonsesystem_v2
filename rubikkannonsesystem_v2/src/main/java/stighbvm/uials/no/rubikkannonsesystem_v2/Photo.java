@@ -5,6 +5,7 @@
  */
 package stighbvm.uials.no.rubikkannonsesystem_v2;
 
+import javax.persistence.Basic;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -15,6 +16,7 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.NamedQuery;
@@ -34,8 +36,12 @@ public class Photo {
 public static final String FIND_BY_NAME = "Photo.findByName";
 
 @Id
-String id;
+Long id;
 
 String name;
+
+@Lob
+@Basic(fetch = FetchType.LAZY)
+private byte[] photo;
         
 }

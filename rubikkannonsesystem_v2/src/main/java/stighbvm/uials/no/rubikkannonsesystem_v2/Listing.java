@@ -25,6 +25,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -66,9 +68,14 @@ public class Listing {
             inverseJoinColumns = @JoinColumn (name="itemid", referencedColumnName ="itemid"))
     List<Item> items;
     
+    @NotBlank(message = "Litemid cannot be blank")
     Long Litemid;
+    
+    @NotBlank(message = "Sellerid cannot be blank")
     String sellerid;
+    
     String buyerid;
+    Long photoid;
     
     
             

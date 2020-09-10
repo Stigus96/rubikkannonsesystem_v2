@@ -33,6 +33,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.Version;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -57,10 +59,10 @@ public class User implements Serializable {
         ACTIVE, INACTIVE
     }
     
-    @Id
+    @Id @NotBlank(message = "Name cannot be blank")
     String userid;
     
-    @JsonbTransient
+    @JsonbTransient @NotBlank(message = "Password cannot be blank")
     String password;
     
     @Email

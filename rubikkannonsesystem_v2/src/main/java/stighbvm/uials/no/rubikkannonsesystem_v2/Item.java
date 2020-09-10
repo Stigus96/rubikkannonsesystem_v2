@@ -30,6 +30,9 @@ import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.Version;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -64,8 +67,12 @@ public class Item {
             inverseJoinColumns = @JoinColumn(name="name",referencedColumnName = "name"))
     List<Group> groups;
 
+    @NotBlank(message = "Title cannot be blank")
     String title;
+    
     String description;
+    
+    @NotNull(message = "Price cannot be null") @Positive(message = "price must be a positive value")
     BigDecimal price;
     
     @ElementCollection(fetch = FetchType.LAZY)

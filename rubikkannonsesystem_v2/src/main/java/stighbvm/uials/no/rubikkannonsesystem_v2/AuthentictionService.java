@@ -76,6 +76,8 @@ public class AuthentictionService {
     @Inject
     JsonWebToken principal;
 
+    @GET
+    @Path("login")
     public Response login(
             @QueryParam("userid") @NotBlank String userid,
             @QueryParam("password") @NotBlank String password,
@@ -160,6 +162,9 @@ public class AuthentictionService {
      * Change password of current user or any user if current user has the role
      * of administrator
      */
+    @PUT
+    @Path("changepassword")
+    @RolesAllowed(value = {Group.USER})
     public Response changePassword(@QueryParam("userid") String userid,
             @QueryParam("password") String password,
             @Context SecurityContext sc) {

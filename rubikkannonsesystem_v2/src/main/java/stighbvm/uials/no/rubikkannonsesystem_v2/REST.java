@@ -99,6 +99,8 @@ public class REST {
         return em.createNamedQuery(Listing.FIND_UNSOLD_LISTINGS, Listing.class).getResultList();
     }
     
+    @GET
+    @Path("item/{itemid}")
     private Item getItem(Long itemid){
         return em.createNamedQuery(Item.FIND_BY_ITEMID, Item.class)
                 .setParameter("itemid", itemid)
@@ -106,7 +108,8 @@ public class REST {
                 .getSingleResult();
     }
 
-    
+    @GET
+    @Path("listings")
     private Listing getListing(Long listingid) {
         return em.createNamedQuery(Listing.FIND_BY_LISTINGID, Listing.class)
                 .setParameter("listingid", listingid)
@@ -121,6 +124,8 @@ public class REST {
      * @param itemid unique id for item
      * @return result of purchase request
      */
+    @PUT
+    @Path("purchase")
     @RolesAllowed(value = {Group.USER})
     public Response purchase(Long listingid) {
         User user = em.find(User.class,sc.getUserPrincipal().getName());
@@ -229,7 +234,7 @@ public class REST {
             @FormDataParam("Litemid") Long Litemid,
             @FormDataParam("sellerid") String sellerid,
             //@FormDataParam("buyerid") String buyerid,
-            FormDataMultiPart photos) {
+            FormDataMultiPart multiPart) {
         Listing listing = em.find(Listing.class, listingid);
         if (listing != null) {
             log.log(Level.INFO, "listing already exists {0}", listingid);
@@ -241,6 +246,7 @@ public class REST {
             listing.setLitemid(Litemid);
             //listing.setBuyerid(buyerid);
             listing.setSellerid(sellerid);
+           // listing.setPhotoid(photoid);
             return Response.ok(em.merge(listing)).build();
         }
 
