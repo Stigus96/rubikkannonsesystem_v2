@@ -120,23 +120,23 @@ public class REST {
         Listing listing = em.find(Listing.class, getListing(listingid));
 
         
-        if ((listing.buyerid) == (user.userid)) {
+        if ((listing.getBuyerid()) == (user.getUserid())) {
             log.log(Level.INFO, "you can not buy your own item");
             return Response.status(Response.Status.BAD_REQUEST).build();
         } 
-        if (listing.buyerid != null){
+        if (listing.getBuyerid() != null){
             log.log(Level.INFO, "item has already been bought");
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
         else {
-            listing.buyerid = user.userid;
+            listing.setBuyerid(user.getUserid());
             
-            Item item = em.find(Item.class, listing.Litemid);
-            User userseller = em.find(User.class, listing.sellerid);
-            String email = userseller.email;
-            String subject = "Your item " + item.title + " has been sold";
-            String body = "The item " + item.title + 
-                    " you put up for sale has been bought by " + user.userid;
+            Item item = em.find(Item.class, listing.getLitemid());
+            User userseller = em.find(User.class, listing.getSellerid());
+            String email = userseller.getEmail();
+            String subject = "Your item " + item.getTitle() + " has been sold";
+            String body = "The item " + item.getTitle() + 
+                    " you put up for sale has been bought by " + user.getUserid();
             mailService.sendEmail(email, subject, body);
                     
             //sendEmail(listing.sellerid, subject, body);
