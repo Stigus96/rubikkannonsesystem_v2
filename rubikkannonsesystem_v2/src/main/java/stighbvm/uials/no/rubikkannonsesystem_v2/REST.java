@@ -93,6 +93,12 @@ public class REST {
         return em.createNamedQuery(Item.FIND_ALL_ITEMS, Item.class).getResultList();
     }
     
+    @GET
+    @Path("listing")
+    public List<Listing> getListings(){
+        return em.createNamedQuery(Listing.FIND_UNSOLD_LISTINGS, Listing.class).getResultList();
+    }
+    
     private Item getItem(Long itemid){
         return em.createNamedQuery(Item.FIND_BY_ITEMID, Item.class)
                 .setParameter("itemid", itemid)
@@ -107,6 +113,7 @@ public class REST {
                 .setParameter("userid", sc.getUserPrincipal().getName())
                 .getSingleResult();
     }
+    
     /**
      * A registered user may purchase an Item. An email will be sent to the
      * seller if the purchase is successful

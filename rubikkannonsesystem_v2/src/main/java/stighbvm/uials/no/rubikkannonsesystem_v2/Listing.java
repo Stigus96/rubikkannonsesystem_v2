@@ -29,6 +29,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import static stighbvm.uials.no.rubikkannonsesystem_v2.Listing.FIND_BY_LISTINGID;
+import static stighbvm.uials.no.rubikkannonsesystem_v2.Listing.FIND_UNSOLD_LISTINGS;
 
 /**
  *
@@ -38,10 +39,14 @@ import static stighbvm.uials.no.rubikkannonsesystem_v2.Listing.FIND_BY_LISTINGID
 @Data @AllArgsConstructor @NoArgsConstructor
 @NamedQuery(name = FIND_BY_LISTINGID,
         query = "query that works perfectly")
+@NamedQuery(name = FIND_UNSOLD_LISTINGS, query = "select l from Listing where buyerid is null order by listingid")
+
 public class Listing {
     public static final String BUYER = "buyer";
     public static final String SELLER = "seller";
     public static final String FIND_BY_LISTINGID = "Listing.findByListingId";
+    public static final String FIND_UNSOLD_LISTINGS = "Listing.findUnsoldListings";
+    
     
     @Id @GeneratedValue
     Long listingid;
