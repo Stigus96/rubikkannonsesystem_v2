@@ -5,10 +5,13 @@
  */
 package stighbvm.uials.no.rubikkannonsesystem_v2;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.json.bind.annotation.JsonbTypeAdapter;
+import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -75,7 +78,18 @@ public class Listing {
     String sellerid;
     
     String buyerid;
-    Long photoid;
+    
+    @JsonbTypeAdapter(PhotoAdapter.class)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    List<Photo> photos;
+    
+    public void addPhoto(Photo photo) {
+        if(this.photos == null) {
+            this.photos = new ArrayList<>();
+        }
+        
+        this.photos.add(photo);
+    }
     
     
             

@@ -36,12 +36,26 @@ public class Photo {
 public static final String FIND_BY_NAME = "Photo.findByName";
 
 @Id
-Long id;
+String id;
+
+String owner;
 
 String name;
+
+long filesize;
+
+String mimeType;
 
 @Lob
 @Basic(fetch = FetchType.LAZY)
 private byte[] photo;
+
+public Photo(String id, String owner, String name, long filesize, String mimetype) {
+        this.id = id;
+        this.owner = owner;
+        this.name = name;
+        this.filesize = filesize;
+        this.mimeType = mimetype;
+    }
         
 }

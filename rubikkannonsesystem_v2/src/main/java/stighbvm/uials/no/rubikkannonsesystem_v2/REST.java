@@ -40,8 +40,14 @@ import lombok.extern.java.Log;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.InvalidKeyException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
+import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
@@ -83,6 +89,11 @@ public class REST {
 
     @Inject
     JsonWebToken principal;
+    
+    /** path to store photos */
+    @Inject
+    @ConfigProperty(name = "photo.storage.path", defaultValue = "chatphotos")
+    String photoPath;
 
     /**
      * Public method that returns items with photos sold in the shop
@@ -203,7 +214,6 @@ public class REST {
      */
     @POST
     @Path("addItem")
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({Group.USER})
     public Response addItem(@FormDataParam("itemid") Long itemid,
@@ -224,6 +234,11 @@ public class REST {
             return Response.ok(em.merge(item)).build();
         }
     }
+    
+    private String getPhotoPath() {
+        return photoPath;
+    }
+
 
     @POST
     @Path("addListing")
@@ -246,7 +261,26 @@ public class REST {
             listing.setLitemid(Litemid);
             //listing.setBuyerid(buyerid);
             listing.setSellerid(sellerid);
-           // listing.setPhotoid(photoid);
+            try{
+           List<FormDataBodyPart> images = multiPart.getFields("image");
+           if(images != null) {
+               for(FormDataBodyPart part : images) {
+                    InputStream is = part.getEntityAs(InputStream.class);
+                    ContentDisposition meta = part.getContentDisposition();            
+
+                    String pid = UUID.randomUUID().toString();
+                    Files.copy(is, Paths.get(getPhotoPath(),pid));
+                    Photo photo = new Photo(pid, sellerid, meta.getFileName(),meta.getSize(),meta.getType());
+                    em.persist(photo);
+                    listing.addPhoto(photo);
+                }
+            }
+
+            em.persist(listing);
+            } catch (IOException ex) {
+             Logger.getLogger(REST.class.getName()).log(Level.SEVERE, null, ex);
+            return Response.serverError().build();  
+            }
             return Response.ok(em.merge(listing)).build();
         }
 
