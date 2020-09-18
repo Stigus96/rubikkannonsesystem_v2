@@ -43,8 +43,8 @@ import static stighbvm.uials.no.rubikkannonsesystem_v2.Listing.FIND_UNSOLD_LISTI
 @Entity @Table(name = "ALISTING")
 @Data @AllArgsConstructor @NoArgsConstructor
 @NamedQuery(name = FIND_BY_LISTINGID,
-        query = "query that works perfectly")
-@NamedQuery(name = FIND_UNSOLD_LISTINGS, query = "select l from Listing where buyerid is null order by listingid")
+        query = "select l from Listing l where l.listingid in :lids")
+@NamedQuery(name = FIND_UNSOLD_LISTINGS, query = "select l from Listing l where l.buyerid is null order by l.listingid")
 
 public class Listing {
     public static final String BUYER = "buyer";
@@ -59,18 +59,6 @@ public class Listing {
     @Temporal(javax.persistence.TemporalType.DATE)
     Date created;
     
-    @OneToMany
-    @JoinTable(name="buyerid",
-            joinColumns = @JoinColumn(name = "buyerid", referencedColumnName ="buyerid"),
-            inverseJoinColumns = @JoinColumn (name="userid", referencedColumnName ="userid"))
-    List<User> users;
-    
-    @OneToOne
-    @JoinTable(name="Litemid",
-            joinColumns = @JoinColumn(name = "Litemid", referencedColumnName ="Litemid"),
-            inverseJoinColumns = @JoinColumn (name="itemid", referencedColumnName ="itemid"))
-    List<Item> items;
-    
     @NotBlank(message = "Litemid cannot be blank")
     Long Litemid;
     
@@ -78,6 +66,17 @@ public class Listing {
     String sellerid;
     
     String buyerid;
+  
+       @OneToMany
+    @JoinTable(name="ALISTING",
+            joinColumns = @JoinColumn(name = "buyerid", referencedColumnName ="buyerid"),
+            inverseJoinColumns = @JoinColumn (name="userid", referencedColumnName ="userid"))
+    List<User> users;
+    
+    @OneToOne
+    @JoinTable(name="ALISTING",
+            joinColumns = @JoinColumn(name = "Litemid", referencedColumnName ="Litemid"),
+            inverseJoinColumns = @JoinColumn (name="itemid", referencedColumnName ="itemid"))
     
     @JsonbTypeAdapter(PhotoAdapter.class)
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -91,6 +90,7 @@ public class Listing {
         this.photos.add(photo);
     }
     
+
     
             
     

@@ -44,10 +44,9 @@ import static stighbvm.uials.no.rubikkannonsesystem_v2.Item.FIND_BY_ITEMID;
  * An item to be sold in the Fant webstore */
 @Entity @Table(name = "AITEM")
 @Data @AllArgsConstructor @NoArgsConstructor
-@NamedQuery(name = FIND_ALL_ITEMS, query = "select i from Item order by i.title")
+@NamedQuery(name = FIND_ALL_ITEMS, query = "select i from Item i order by i.title")
 @NamedQuery(name = FIND_BY_ITEMID,
-        query = "select distinct i from Item i, User u" +
-                "where i.itemid = :itemid and u.userid = :userid")
+        query = "select i from Item i where i.itemid in:ids")
 
 public class Item {
     public static final String FIND_ALL_ITEMS = "Item.findAllItems";
@@ -61,11 +60,6 @@ public class Item {
     @Temporal(javax.persistence.TemporalType.DATE)
     Date created;
     
-    @ManyToMany
-    @JoinTable(name="AUSERGROUP",
-            joinColumns = @JoinColumn(name="userid", referencedColumnName = "userid"),
-            inverseJoinColumns = @JoinColumn(name="name",referencedColumnName = "name"))
-    List<Group> groups;
 
     @NotBlank(message = "Title cannot be blank")
     String title;
@@ -87,7 +81,7 @@ public class Item {
     }
     
     @OneToOne
-    @JoinTable(name="itemid",
+    @JoinTable(name="ALISTING",
             inverseJoinColumns = @JoinColumn (name="itemid", referencedColumnName ="itemid"),
             joinColumns = @JoinColumn(name = "Litemid", referencedColumnName ="Litemid"))
     List<Listing> listings;

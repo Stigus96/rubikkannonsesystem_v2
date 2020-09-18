@@ -89,18 +89,10 @@ public class User implements Serializable {
     
     
     @ManyToOne
-    @JoinTable(name="buyerid",
+    @JoinTable(name="ALISTING",
             joinColumns = @JoinColumn (name="userid", referencedColumnName ="userid"),
             inverseJoinColumns = @JoinColumn(name = "buyerid", referencedColumnName ="buyerid"))
-    List<Listing> buyers;
-    
-    
-    public List<Listing> getBuyer() {
-        if(buyers == null) {
-            buyers = new ArrayList<>();
-        }
-        return buyers;
-    }
+    Listing listng;
    
     
 }
