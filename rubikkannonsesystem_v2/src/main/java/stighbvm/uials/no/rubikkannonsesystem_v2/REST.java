@@ -57,7 +57,6 @@ import javax.ws.rs.PathParam;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
-import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.glassfish.jersey.media.multipart.ContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
@@ -87,8 +86,6 @@ public class REST {
     @Inject
     PasswordHash hasher;
 
-    @Inject
-    JsonWebToken principal;
     
     /** path to store photos */
     @Inject
@@ -112,7 +109,7 @@ public class REST {
     
     @GET
     @Path("item/{itemid}")
-    private Item getItem(Long itemid){
+    public Item getItem(Long itemid){
         return em.createNamedQuery(Item.FIND_BY_ITEMID, Item.class)
                 .setParameter("itemid", itemid)
                 .setParameter("userid", sc.getUserPrincipal().getName())
@@ -121,7 +118,7 @@ public class REST {
 
     @GET
     @Path("listings")
-    private Listing getListing(Long listingid) {
+    public Listing getListing(Long listingid) {
         return em.createNamedQuery(Listing.FIND_BY_LISTINGID, Listing.class)
                 .setParameter("listingid", listingid)
                 .setParameter("userid", sc.getUserPrincipal().getName())
@@ -245,7 +242,7 @@ public class REST {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({Group.USER})
-    private Response makeListing(@FormDataParam("listingid") Long listingid,
+    public Response makeListing(@FormDataParam("listingid") Long listingid,
             @FormDataParam("Litemid") Long Litemid,
             @FormDataParam("sellerid") String sellerid,
             //@FormDataParam("buyerid") String buyerid,

@@ -49,7 +49,7 @@ import static stighbvm.uials.no.rubikkannonsesystem_v2.User.FIND_USER_BY_IDS;
 @Entity 
 @Table(name = "AUSER")
 @Data @AllArgsConstructor @NoArgsConstructor
-@NamedQuery(name = FIND_ALL_USERS, query = "select u from User u order by u.firstName")
+@NamedQuery(name = FIND_ALL_USERS, query = "select u from User u order by u.userid")
 @NamedQuery(name = FIND_USER_BY_IDS, query = "select u from User u where u.userid in :ids")
 public class User implements Serializable {
     public static final String FIND_USER_BY_IDS = "User.findUserByIds";

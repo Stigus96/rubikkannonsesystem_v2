@@ -43,6 +43,7 @@ import io.jsonwebtoken.security.InvalidKeyException;
 import javax.annotation.Resource;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
+import stighbvm.uials.no.rubikkannonsesystem_v2.DatasourceProducer;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
@@ -62,6 +63,13 @@ public class AuthentictionService {
 
     @Inject
     IdentityStoreHandler identityStoreHandler;
+    
+    /** 
+     * The application server will inject a DataSource as a way to communicate 
+     * with the database.
+     */
+    @Resource(lookup = DatasourceProducer.JNDI_NAME)
+    DataSource dataSource;
 
     @PersistenceContext
     EntityManager em;

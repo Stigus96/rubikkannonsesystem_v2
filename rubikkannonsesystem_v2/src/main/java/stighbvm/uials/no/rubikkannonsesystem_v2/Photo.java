@@ -36,11 +36,11 @@ import static stighbvm.uials.no.rubikkannonsesystem_v2.Photo.FIND_BY_NAME;
  * @author Stigus
  * Represents a photo or an image of an item for sale */
     @NamedQuery(name = FIND_BY_NAME,
-            query = "select * from Photos")
+            query = "select p from Photo p where p.name = :name order by p.name")
     
 @Entity
-@Data 
-public class  Photo {
+@Data @AllArgsConstructor
+public class  Photo implements Serializable {
 public static final String FIND_BY_NAME = "Photo.findByName";
 
 @Id
@@ -56,6 +56,8 @@ String mimeType;
 
 @ManyToOne(cascade = CascadeType.ALL)
 Listing listng;
+
+public Photo() {}
 
 
 public Photo(String id, String owner, String name, long filesize, String mimetype) {

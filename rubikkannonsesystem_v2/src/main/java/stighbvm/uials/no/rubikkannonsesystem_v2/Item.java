@@ -46,7 +46,7 @@ import static stighbvm.uials.no.rubikkannonsesystem_v2.Item.FIND_BY_ITEMID;
 @Data @AllArgsConstructor @NoArgsConstructor
 @NamedQuery(name = FIND_ALL_ITEMS, query = "select i from Item i order by i.title")
 @NamedQuery(name = FIND_BY_ITEMID,
-        query = "select i from Item i where i.itemid in:ids")
+        query = "select i from Item i where i.itemid = :itemid")
 
 public class Item {
     public static final String FIND_ALL_ITEMS = "Item.findAllItems";
