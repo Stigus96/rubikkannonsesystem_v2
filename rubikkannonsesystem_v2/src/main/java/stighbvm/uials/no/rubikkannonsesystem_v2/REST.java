@@ -109,19 +109,17 @@ public class REST {
     
     @GET
     @Path("item/{itemid}")
-    public Item getItem(Long itemid){
+    public Item getItem(@PathParam("itemid") Long itemid){
         return em.createNamedQuery(Item.FIND_BY_ITEMID, Item.class)
                 .setParameter("itemid", itemid)
-                .setParameter("userid", sc.getUserPrincipal().getName())
                 .getSingleResult();
     }
 
     @GET
     @Path("listings")
-    public Listing getListing(Long listingid) {
+    public Listing getListing(@PathParam("listingid") Long listingid) {
         return em.createNamedQuery(Listing.FIND_BY_LISTINGID, Listing.class)
                 .setParameter("listingid", listingid)
-                .setParameter("userid", sc.getUserPrincipal().getName())
                 .getSingleResult();
     }
     
@@ -202,10 +200,10 @@ public class REST {
     /**
      * A registered user may add an item and photo(s) to Fant.
      *
+     * @param itemid the id of the item
      * @param title the title of Item
      * @param description the description of Item
      * @param price the price of Item
-     * @param photos one or more photos associated with Item
      * @return result of the request. If successful, the request will include
      * the new unique ids of the Item and associated Photos
      */
