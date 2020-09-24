@@ -211,10 +211,10 @@ public class REST {
     @Path("addItem")
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({Group.USER})
-    public Response addItem(@FormDataParam("itemid") Long itemid,
-            @FormDataParam("title") String title,
-            @FormDataParam("description") String description,
-            @FormDataParam("price") BigDecimal price) {
+    public Response addItem(@FormParam("itemid") Long itemid,
+            @FormParam("title") String title,
+            @FormParam("description") String description,
+            @FormParam("price") BigDecimal price) {
         Item item = em.find(Item.class, itemid);
         if (item != null) {
             log.log(Level.INFO, "item already exists {0}", itemid);
@@ -240,9 +240,9 @@ public class REST {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({Group.USER})
-    public Response makeListing(@FormDataParam("listingid") Long listingid,
-            @FormDataParam("Litemid") Long Litemid,
-            @FormDataParam("sellerid") String sellerid,
+    public Response makeListing(@FormParam("listingid") Long listingid,
+            @FormParam("Litemid") Long Litemid,
+            @FormParam("sellerid") String sellerid,
             //@FormDataParam("buyerid") String buyerid,
             FormDataMultiPart multiPart) {
         Listing listing = em.find(Listing.class, listingid);
