@@ -12,6 +12,7 @@ import javax.ws.rs.core.Response;
 public class JavaEE8Resource {
     
     @GET
+    @Path("ping")
     public Response ping(){
         return Response
                 .ok("ping")

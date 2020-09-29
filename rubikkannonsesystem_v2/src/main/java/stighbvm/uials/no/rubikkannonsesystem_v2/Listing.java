@@ -80,14 +80,14 @@ public class Listing {
     
     @JsonbTypeAdapter(PhotoAdapter.class)
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    List<Photo> photos;
+    List<Photo> photo;
     
     public void addPhoto(Photo photo) {
-        if(this.photos == null) {
-            this.photos = new ArrayList<>();
+        if(this.photo == null) {
+            this.photo = new ArrayList<>();
         }
         
-        this.photos.add(photo);
+        this.photo.add(photo);
     }
     
 

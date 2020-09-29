@@ -84,6 +84,6 @@ public class Item {
     @JoinTable(name="ALISTING",
             inverseJoinColumns = @JoinColumn (name="itemid", referencedColumnName ="itemid"),
             joinColumns = @JoinColumn(name = "Litemid", referencedColumnName ="Litemid"))
-    List<Listing> listings;
+    List<Listing> listing;
     
 }

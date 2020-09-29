@@ -56,12 +56,18 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 @Stateless
 @Log
 public class AuthentictionService {
+    
+    private static final String INSERT_USERGROUP = "INSERT INTO AUSERGROUP(NAME,USERID) VALUES (?,?)";
 
     @Inject
     KeyService keyService;
 
     @Inject
     IdentityStoreHandler identityStoreHandler;
+    
+    @Inject
+    @ConfigProperty(name = "mp.jwt.verify.issuer", defaultValue = "issuer")
+    String issuer;
     
     /** 
      * The application server will inject a DataSource as a way to communicate 
@@ -74,15 +80,18 @@ public class AuthentictionService {
     EntityManager em;
 
     @Inject
-    @ConfigProperty(name = "mp.jwt.verify.issuer", defaultValue = "issuer")
-    String issuer;
-
-    @Inject
     PasswordHash hasher;
 
     @Inject
     JsonWebToken principal;
 
+    /**
+     *
+     * @param userid
+     * @param password
+     * @param request
+     * @return
+     */
     @GET
     @Path("login")
     public Response login(
@@ -136,6 +145,16 @@ public class AuthentictionService {
         }
     }
 
+    /**
+     * Does an insert into the AUSER and AUSERGROUP tables. It creates a SHA-256
+     * hash of the password and Base64 encodes it before the user is created in
+     * the database. The authentication system will read the AUSER table when
+     * doing an authentication.
+     *
+     * @param uid
+     * @param pwd
+     * @return
+     */
     @POST
     @Path("create")
     @Produces(MediaType.APPLICATION_JSON)
@@ -157,6 +176,11 @@ public class AuthentictionService {
         }
     } // Create new user
 
+    
+    /**
+     *
+     * @return
+     */
     @GET
     @Path("currentuser")
     @RolesAllowed(value = {Group.USER})
@@ -166,9 +190,60 @@ public class AuthentictionService {
     } // Get information about current user
 
     /**
-     * Change password of current user or any user if current user has the role
-     * of administrator
+     *
+     * @param uid
+     * @param password
+     * @param sc
+     * @return
      */
+    
+    /**
+     *
+     * @param useridid
+     * @param role
+     * @return
+     */
+    @PUT
+    @Path("addrole")
+    @RolesAllowed(value = {Group.ADMIN})
+    public Response addRole(@QueryParam("userid") String userid, @QueryParam("role") String role) {
+        if (!roleExists(role)) {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
+
+        try (Connection c = dataSource.getConnection();
+             PreparedStatement psg = c.prepareStatement(INSERT_USERGROUP)) {
+            psg.setString(1, role);
+            psg.setString(2, userid);
+            psg.executeUpdate();
+        } catch (SQLException ex) {
+            log.log(Level.SEVERE, null, ex);
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+
+        return Response.ok().build();
+    }
+    
+     /**
+     *
+     * @param role
+     * @return
+     */
+    private boolean roleExists(String role) {
+        boolean result = false;
+
+        if (role != null) {
+            switch (role) {
+                case Group.ADMIN:
+                case Group.USER:
+                    result = true;
+                    break;
+            }
+        }
+
+        return result;
+    }
+    
     @PUT
     @Path("changepassword")
     @RolesAllowed(value = {Group.USER})
