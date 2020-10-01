@@ -102,7 +102,7 @@ public class REST {
     }
     
     @GET
-    @Path("listing")
+    @Path("listings")
     public List<Listing> getListings(){
         return em.createNamedQuery(Listing.FIND_UNSOLD_LISTINGS, Listing.class).getResultList();
     }
@@ -116,7 +116,7 @@ public class REST {
     }
 
     @GET
-    @Path("listings")
+    @Path("listing")
     public Listing getListing(@PathParam("listingid") Long listingid) {
         return em.createNamedQuery(Listing.FIND_BY_LISTINGID, Listing.class)
                 .setParameter("listingid", listingid)
