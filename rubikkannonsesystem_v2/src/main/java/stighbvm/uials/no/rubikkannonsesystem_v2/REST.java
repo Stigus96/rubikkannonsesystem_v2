@@ -134,23 +134,23 @@ public class REST {
      * @return result of purchase request
      */
     @PUT
-    @Path("purchase")
+    @Path("purchase/{itemid}")
     @RolesAllowed(value = {Group.USER})
-    public Response purchase(Long itemid) {
-        User user = em.find(User.class,sc.getUserPrincipal().getName());
-        Item item = em.find(Item.class, getItem(itemid));
+    public Response purchase(@PathParam("itemid") Long itemid) {
+        User user = em.find(User.class, sc.getUserPrincipal().getName());
+        Item item = em.find(Item.class, itemid);
 
         
-        if ((item.getBuyerid()) == (user.getUserid())) {
+        if ((item.getSellerid()) == (user)) {
             log.log(Level.INFO, "you can not buy your own item");
             return Response.status(Response.Status.BAD_REQUEST).build();
         } 
-        if (item.getBuyerid() != null){
+        if (item.getBuyerid() != item.getSellerid()){
             log.log(Level.INFO, "item has already been bought");
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
         else {
-            item.setBuyerid(user.getUserid());
+            item.setBuyerid(user);
             
             
             User userseller = em.find(User.class, item.getSellerid());
@@ -233,11 +233,12 @@ public class REST {
             item.setTitle(title);
             item.setDescription(description);
             item.setPrice(price);
-            //item.setBuyerid(buyerid);
+            
 
             
-            //User user = em.find(User.class, sc.getUserPrincipal().getName());
-           // item.setSellerid(sellerid);
+            User user = em.find(User.class, sc.getUserPrincipal().getName());
+            item.setSellerid(user);
+            item.setBuyerid(user);
             return Response.ok(em.merge(item)).build();
         }
     }

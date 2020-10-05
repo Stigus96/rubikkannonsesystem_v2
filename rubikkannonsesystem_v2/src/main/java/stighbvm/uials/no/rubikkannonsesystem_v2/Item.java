@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.json.bind.annotation.JsonbTransient;
+import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -23,6 +24,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -55,7 +57,7 @@ public class Item {
     
 
     
-    @Id @GeneratedValue
+    @Id
     Long itemid;
     
     @Temporal(javax.persistence.TemporalType.DATE)
@@ -70,10 +72,11 @@ public class Item {
     @NotNull(message = "Price cannot be null") @Positive(message = "price must be a positive value")
     BigDecimal price;
     
-    @NotBlank(message = "Sellerid cannot be blank")
-    String sellerid;
+    @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
+    User sellerid;
     
-    String buyerid;
+    @ManyToOne(optional = true, cascade = CascadeType.PERSIST)
+    User buyerid;
     
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "aitem_properties", joinColumns=@JoinColumn(name="itemid"))
@@ -86,18 +89,6 @@ public class Item {
         created = new Date();
     }
     
-    @OneToMany
-    @JoinTable(name="AITEM",
-            joinColumns = @JoinColumn(name = "sellerid", referencedColumnName ="sellerid"),
-            inverseJoinColumns = @JoinColumn (name="userid", referencedColumnName ="userid"))
-    List<User> sellers; 
-    
-    
-    @OneToMany
-    @JoinTable(name="AITEM",
-            joinColumns = @JoinColumn(name = "buyerid", referencedColumnName ="buyerid"),
-            inverseJoinColumns = @JoinColumn (name="userid", referencedColumnName ="userid"))
-    List<User> buyers; 
-    
+
     
 }

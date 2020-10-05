@@ -87,18 +87,6 @@ public class User implements Serializable {
         return groups;
     }
     
-    
-    @ManyToOne
-    @JoinTable(name="AITEM",
-            joinColumns = @JoinColumn (name="userid", referencedColumnName ="userid"),
-            inverseJoinColumns = @JoinColumn(name = "buyerid", referencedColumnName ="buyerid"))
-    Item boughtitem;
-    
-    @ManyToOne
-    @JoinTable(name="AITEM",
-            joinColumns = @JoinColumn (name="userid", referencedColumnName ="userid"),
-            inverseJoinColumns = @JoinColumn(name = "sellerid", referencedColumnName ="sellerid"))
-    Item item;
    
     
 }

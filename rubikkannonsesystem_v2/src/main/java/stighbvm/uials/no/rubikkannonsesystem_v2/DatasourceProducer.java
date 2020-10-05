@@ -17,7 +17,7 @@ import static stighbvm.uials.no.rubikkannonsesystem_v2.DatasourceProducer.JNDI_N
 @DataSourceDefinition(
     name = JNDI_NAME,
     className = "org.h2.jdbcx.JdbcDataSource",
-    url = "jdbc:h2:~/h2db.db")
+    url = "jdbc:h2:~/anon")
 public class DatasourceProducer {
     public static final String JNDI_NAME =  "java:app/jdbc/default";
 
