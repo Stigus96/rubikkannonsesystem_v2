@@ -25,6 +25,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
@@ -69,6 +70,11 @@ public class Item {
     @NotNull(message = "Price cannot be null") @Positive(message = "price must be a positive value")
     BigDecimal price;
     
+    @NotBlank(message = "Sellerid cannot be blank")
+    String sellerid;
+    
+    String buyerid;
+    
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "aitem_properties", joinColumns=@JoinColumn(name="itemid"))
     @MapKeyColumn(name="key")
@@ -80,10 +86,18 @@ public class Item {
         created = new Date();
     }
     
-    @OneToOne
-    @JoinTable(name="ALISTING",
-            inverseJoinColumns = @JoinColumn (name="itemid", referencedColumnName ="itemid"),
-            joinColumns = @JoinColumn(name = "Litemid", referencedColumnName ="Litemid"))
-    List<Listing> listing;
+    @OneToMany
+    @JoinTable(name="AITEM",
+            joinColumns = @JoinColumn(name = "sellerid", referencedColumnName ="sellerid"),
+            inverseJoinColumns = @JoinColumn (name="userid", referencedColumnName ="userid"))
+    List<User> sellers; 
+    
+    
+    @OneToMany
+    @JoinTable(name="AITEM",
+            joinColumns = @JoinColumn(name = "buyerid", referencedColumnName ="buyerid"),
+            inverseJoinColumns = @JoinColumn (name="userid", referencedColumnName ="userid"))
+    List<User> buyers; 
+    
     
 }

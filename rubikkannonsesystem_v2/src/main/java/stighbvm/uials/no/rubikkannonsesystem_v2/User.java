@@ -89,10 +89,16 @@ public class User implements Serializable {
     
     
     @ManyToOne
-    @JoinTable(name="ALISTING",
+    @JoinTable(name="AITEM",
             joinColumns = @JoinColumn (name="userid", referencedColumnName ="userid"),
             inverseJoinColumns = @JoinColumn(name = "buyerid", referencedColumnName ="buyerid"))
-    Listing listng;
+    Item boughtitem;
+    
+    @ManyToOne
+    @JoinTable(name="AITEM",
+            joinColumns = @JoinColumn (name="userid", referencedColumnName ="userid"),
+            inverseJoinColumns = @JoinColumn(name = "sellerid", referencedColumnName ="sellerid"))
+    Item item;
    
     
 }

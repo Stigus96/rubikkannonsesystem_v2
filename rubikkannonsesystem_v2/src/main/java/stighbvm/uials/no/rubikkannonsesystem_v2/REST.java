@@ -72,6 +72,9 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
 public class REST {
 
     @Inject
+    AuthentictionService authService;
+    
+    @Inject
     IdentityStoreHandler identityStoreHandler;
     
     @Inject
@@ -101,11 +104,11 @@ public class REST {
         return em.createNamedQuery(Item.FIND_ALL_ITEMS, Item.class).getResultList();
     }
     
-    @GET
+ /*   @GET
     @Path("listings")
     public List<Listing> getListings(){
         return em.createNamedQuery(Listing.FIND_UNSOLD_LISTINGS, Listing.class).getResultList();
-    }
+    }*/
     
     @GET
     @Path("item/{itemid}")
@@ -115,13 +118,13 @@ public class REST {
                 .getSingleResult();
     }
 
-    @GET
+    /*@GET
     @Path("listing")
     public Listing getListing(@PathParam("listingid") Long listingid) {
         return em.createNamedQuery(Listing.FIND_BY_LISTINGID, Listing.class)
                 .setParameter("listingid", listingid)
                 .getSingleResult();
-    }
+    }*/
     
     /**
      * A registered user may purchase an Item. An email will be sent to the
@@ -133,24 +136,24 @@ public class REST {
     @PUT
     @Path("purchase")
     @RolesAllowed(value = {Group.USER})
-    public Response purchase(Long listingid) {
+    public Response purchase(Long itemid) {
         User user = em.find(User.class,sc.getUserPrincipal().getName());
-        Listing listing = em.find(Listing.class, getListing(listingid));
+        Item item = em.find(Item.class, getItem(itemid));
 
         
-        if ((listing.getBuyerid()) == (user.getUserid())) {
+        if ((item.getBuyerid()) == (user.getUserid())) {
             log.log(Level.INFO, "you can not buy your own item");
             return Response.status(Response.Status.BAD_REQUEST).build();
         } 
-        if (listing.getBuyerid() != null){
+        if (item.getBuyerid() != null){
             log.log(Level.INFO, "item has already been bought");
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
         else {
-            listing.setBuyerid(user.getUserid());
+            item.setBuyerid(user.getUserid());
             
-            Item item = em.find(Item.class, listing.getLitemid());
-            User userseller = em.find(User.class, listing.getSellerid());
+            
+            User userseller = em.find(User.class, item.getSellerid());
             String email = userseller.getEmail();
             String subject = "Your item " + item.getTitle() + " has been sold";
             String body = "The item " + item.getTitle() + 
@@ -158,7 +161,7 @@ public class REST {
             mailService.sendEmail(email, subject, body);
                     
             //sendEmail(listing.sellerid, subject, body);
-            return Response.ok(em.merge(listing)).build();
+            return Response.ok(em.merge(item)).build();
         }
         
     } 
@@ -214,7 +217,11 @@ public class REST {
     public Response addItem(@FormParam("itemid") Long itemid,
             @FormParam("title") String title,
             @FormParam("description") String description,
-            @FormParam("price") BigDecimal price) {
+            @FormParam("price") BigDecimal price
+           // @FormParam("buyerid") String buyerid,
+           // @FormParam("sellerid") String sellerid
+    )
+    {
         Item item = em.find(Item.class, itemid);
         if (item != null) {
             log.log(Level.INFO, "item already exists {0}", itemid);
@@ -226,25 +233,35 @@ public class REST {
             item.setTitle(title);
             item.setDescription(description);
             item.setPrice(price);
+            //item.setBuyerid(buyerid);
+
+            
+            //User user = em.find(User.class, sc.getUserPrincipal().getName());
+           // item.setSellerid(sellerid);
             return Response.ok(em.merge(item)).build();
         }
     }
+    
+    
+    
     
     private String getPhotoPath() {
         return photoPath;
     }
 
 
+    /*
     @POST
     @Path("addListing")
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    //@Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({Group.USER})
     public Response makeListing(@FormParam("listingid") Long listingid,
             @FormParam("Litemid") Long Litemid,
-            @FormParam("sellerid") String sellerid,
+            @FormParam("sellerid") String sellerid
             //@FormDataParam("buyerid") String buyerid,
-            FormDataMultiPart multiPart) {
+            //FormDataMultiPart multiPart
+    ) {
         Listing listing = em.find(Listing.class, listingid);
         if (listing != null) {
             log.log(Level.INFO, "listing already exists {0}", listingid);
@@ -279,7 +296,8 @@ public class REST {
             return Response.ok(em.merge(listing)).build();
         }
 
-    }
+    } */
+
     
     /**
      * Streams an image to the browser (the actual compressed pixels). The image

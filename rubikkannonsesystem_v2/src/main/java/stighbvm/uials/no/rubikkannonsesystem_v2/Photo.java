@@ -55,7 +55,7 @@ long filesize;
 String mimeType;
 
 @ManyToOne(cascade = CascadeType.ALL)
-Listing listng;
+Item item;
 
 public Photo() {}
 
