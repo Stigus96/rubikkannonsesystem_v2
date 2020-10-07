@@ -214,7 +214,7 @@ public class REST {
     @Path("addItem")
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({Group.USER})
-    public Response addItem(@FormParam("itemid") Long itemid,
+    public Response addItem(//@FormParam("itemid") Long itemid,
             @FormParam("title") String title,
             @FormParam("description") String description,
             @FormParam("price") BigDecimal price
@@ -222,26 +222,29 @@ public class REST {
            // @FormParam("sellerid") String sellerid
     )
     {
-        Item item = em.find(Item.class, itemid);
-        if (item != null) {
-            log.log(Level.INFO, "item already exists {0}", itemid);
-            return Response.status(Response.Status.BAD_REQUEST).build();
+        //Item item = em.find(Item.class, itemid);
+       // if (item != null) {
+            //log.log(Level.INFO, "item already exists {0}", itemid);
+           // return Response.status(Response.Status.BAD_REQUEST).build();
 
-        } else {
-            item = new Item();
-            item.setItemid(itemid);
+       // } else {
+            User user = em.find(User.class, sc.getUserPrincipal().getName());
+        
+            Item item = new Item();
             item.setTitle(title);
             item.setDescription(description);
             item.setPrice(price);
             
 
             
-            User user = em.find(User.class, sc.getUserPrincipal().getName());
+            
             item.setSellerid(user);
             item.setBuyerid(user);
-            return Response.ok(em.merge(item)).build();
+            //return Response.ok(em.merge(item)).build();
+            em.merge(item);
+            return Response.ok(item).build();
         }
-    }
+   // }
     
     
     

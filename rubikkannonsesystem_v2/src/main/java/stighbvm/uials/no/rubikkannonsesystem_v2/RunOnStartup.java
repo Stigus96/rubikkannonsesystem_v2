@@ -18,8 +18,7 @@ public class RunOnStartup {
     @PersistenceContext
     EntityManager em;
 
-    @Inject
-    REST chatService;
+
     
     @PostConstruct
     public void init() {

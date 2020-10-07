@@ -20,6 +20,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -30,6 +31,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.Version;
@@ -58,6 +60,7 @@ public class Item {
 
     
     @Id
+    @GeneratedValue
     Long itemid;
     
     @Temporal(javax.persistence.TemporalType.DATE)
@@ -84,11 +87,21 @@ public class Item {
     @Column(name = "value")
     Map<String,String> properties = new HashMap<>();
     
+    
     @PrePersist
     protected void onCreate() {
         created = new Date();
     }
     
+  //  public Item(String title, String description, BigDecimal price, User sellerid, User buyerid){
+   //     this.title = title;
+    //    this.description = description;
+   //     this.price = price;
+   //     this.sellerid = sellerid;
+   //     this.buyerid = buyerid;
+   // }
+    
+   
 
     
 }
